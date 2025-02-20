@@ -37,8 +37,20 @@ int main() {
     // Get the start time.
     double start_time = omp_get_wtime();
 
-    // TODO: your code here. Return the sum in the sum double.
-    double sum = 0;
+   
+    long long sum = 0;
+
+    #pragma omp parallel for
+    for (int i = 0; i < N; ++i) {
+        B[i] += A[i] + i + (i & 1) + B[i + N];
+    }
+
+    B[N] += 2* A[0] + B[0];
+
+    #pragma omp parallel for reduction(+:sum)
+    for (int i = 0; i < N; ++i) {
+        sum += (B[i] + B[N-i]) / 2;
+    }
 
     double end_time = omp_get_wtime();
     double elapsed = end_time - start_time;
